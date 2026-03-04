@@ -38,24 +38,6 @@ The objective is to predict Weekly Sales for 99 departments across 45 stores. Th
 ### Data structure and initial checks
 [Dataset](https://www.kaggle.com/c/walmart-recruiting-store-sales-forecasting)
 
- - The initial checks of your transactions.csv dataset reveal the following:
-
-| Features | Description | Data types |
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-
-| Features | Description | Data types |
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-
 ### Tools
 - Excel : Google Sheets - Check for data types, Table formatting
 - SQL : Big QueryStudio - Querying, manipulating, and managing data in relational databases in 
@@ -102,12 +84,7 @@ COLORS = ["#2E86AB", "#A23B72", "#F18F01", "#C73E1D", "#3B1F2B"]
 SEED = 42
 np.random.seed(SEED)
 ```
-Laoding the datset of `features.csv` and `stores.csv`
-``` python
-features = pd.read_csv("features.csv")
-stores = pd.read_csv("stores.csv")
-```
-Merging both the dataframes
+Laoding the datset of `features.csv`,`stores.csv`,`train.csv` and merging both the dataframes
 ``` python
 def load_and_merge_data(train_path="train.csv", stores_path="stores.csv", features_path="features.csv"):
     """

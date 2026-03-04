@@ -280,6 +280,14 @@ plt.show()
 ```
 <img width="890" height="673" alt="image" src="https://github.com/user-attachments/assets/ac17faad-b855-4b93-9ff4-a20f37d16003" />
 
+Insights:
+
+- Store Size (0.21): This is the strongest positive correlation. Larger stores tend to have higher weekly sales, which makes intuitive sense (more inventory, more foot traffic).
+
+- Department (0.14): There is a slight positive correlation here, suggesting that certain departments inherently generate higher revenue than others.
+
+- External Economic Factors: Features like temperature, fuel_price, cpi (Consumer Price Index), and unemployment have near-zero correlation with weekly sales. This suggests that, in this specific dataset, sales are relatively resilient to minor fluctuations in the macroeconomy or weather.
+
 Now, lets deep dive into our dataset to check which store and department had the maximum and minimum weekly sales.
 
 ``` python

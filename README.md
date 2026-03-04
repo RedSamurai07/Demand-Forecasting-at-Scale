@@ -814,6 +814,15 @@ if __name__ == "__main__":
 <img width="1189" height="489" alt="image" src="https://github.com/user-attachments/assets/daa6a193-bd10-4c10-9cb4-2e57e3dcb197" />
 <img width="1363" height="349" alt="image" src="https://github.com/user-attachments/assets/fc042edd-6e10-4beb-98ef-011e78a60c5c" />
 
+**SQL**
+
+downloaded the data for SQL querying
+``` python
+ouput = df.to_csv('cleaned_data.csv', index=False)
+```
+
+
+
 ### Insights
 
 ### Recommendations

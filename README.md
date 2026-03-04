@@ -11,10 +11,29 @@
 - [Recommendations](recommendations)
 
 ### Project Overview
+This project addresses the complex challenge of Retail Demand Forecasting for Walmart, one of the world’s largest retailers. Using historical sales data from 45 stores across various regions, the project aims to model how specific factors—such as promotional markdowns, regional economic indicators (CPI, Unemployment), and seasonal holidays—impact weekly sales across different departments.
+
+- Source Data: 45 stores across diverse regions.
+
+- Timeframe: Historical weekly sales data including features like Temperature, Fuel Price, and CPI.
+
+- Key Challenge: Accurate forecasting during high-volatility holiday weeks (Super Bowl, Labor Day, Thanksgiving, and Christmas).
 
 ### Executive Summary
 
+In the highly competitive retail landscape, overstocking leads to capital inefficiency, while understocking results in lost revenue. This project developed a high-precision forecasting framework that successfully captures the extreme volatility of holiday-driven demand.
+
+By leveraging a combination of SARIMAX for seasonal trends and Gradient Boosting Regressors for non-linear relationships, the model identifies that Holiday Weeks and Store Size are the primary predictors of sales volume. The integration of "Markdown" data provided a competitive edge, allowing the model to differentiate between organic growth and promotion-driven spikes. The final solution provides Walmart with an automated, data-driven tool to optimize labor allocation and inventory management, potentially saving millions in logistical overhead.
+
 ### Goal
+
+The objective is to predict Weekly Sales for 99 departments across 45 stores. The primary KPIs include:
+
+1). WMAE (Weighted Mean Absolute Error): Accuracy is prioritized during holiday weeks (Super Bowl, Labor Day, Thanksgiving, and Christmas), where weights are 5x higher.
+
+2). Seasonality Modeling: Effectively capturing the "Black Friday" and "Pre-Christmas" surges.
+
+3). Feature Integration: Quantifying the impact of external factors like Fuel Prices and Temperature on consumer foot traffic.
 
 ### Data structure and initial checks
 [Dataset](https://www.kaggle.com/c/walmart-recruiting-store-sales-forecasting)
@@ -1125,11 +1144,24 @@ ORDER BY week_of_year;
 
 **Tableau**
 
+<img width="1267" height="891" alt="image" src="https://github.com/user-attachments/assets/34fc551f-d41e-4ddc-ae07-c69f5e5e1502" />
 
 ### Insights
 
+- The "Holiday Halo" Effect: Sales during the four major holiday weeks account for a disproportionate amount of annual revenue, requiring specialized model weighting.
+
+- Markdown Correlation: While Markdowns 1 and 5 showed the strongest correlation with sales spikes, Markdowns 2 and 3 were often specific to certain departments, suggesting a need for department-level promotional strategies.
+
+- Regional Resilience: Economic indicators like CPI and Unemployment showed a surprisingly low correlation with short-term sales fluctuations, suggesting Walmart’s "Everyday Low Price" model is resilient to minor economic shifts.
+
+- Cluster Performance: Type 'A' stores significantly outperformed Types 'B' and 'C' in both volume and stability, indicating that store infrastructure is a major baseline sales driver.
+
 ### Recommendations
 
+- Strategic Inventory Stocking: Walmart should prioritize inventory surges 1-2 weeks prior to the "Thanksgiving" and "Christmas" windows, as the data shows these as the highest volume periods.
 
+- Model Selection: For stable departments, SARIMAX is recommended for its ability to handle seasonality; however, for stores with frequent markdowns, Gradient Boosting or Random Forest should be used to capture non-linear interactions between promotions and sales.
 
+- Data Enrichment: Future iterations should include local event data (e.g., sporting events or localized weather emergencies) to further refine store-specific predictions.
 
+- Weighting Holidays: Ensure that the forecasting model continues to prioritize accuracy during holiday weeks, as these periods represent a disproportionate share of annual revenue and are the most prone to stock-outs.

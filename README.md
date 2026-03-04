@@ -11,31 +11,32 @@
 - [Recommendations](recommendations)
 
 ### Project Overview
+This project addresses the complex challenge of Retail Demand Forecasting for Walmart, one of the world’s largest retailers. Using historical sales data from 45 stores across various regions, the project aims to model how specific factors—such as promotional markdowns, regional economic indicators (CPI, Unemployment), and seasonal holidays—impact weekly sales across different departments.
+
+- Source Data: 45 stores across diverse regions.
+
+- Timeframe: Historical weekly sales data including features like Temperature, Fuel Price, and CPI.
+
+- Key Challenge: Accurate forecasting during high-volatility holiday weeks (Super Bowl, Labor Day, Thanksgiving, and Christmas).
 
 ### Executive Summary
 
+In the highly competitive retail landscape, overstocking leads to capital inefficiency, while understocking results in lost revenue. This project developed a high-precision forecasting framework that successfully captures the extreme volatility of holiday-driven demand.
+
+By leveraging a combination of SARIMAX for seasonal trends and Gradient Boosting Regressors for non-linear relationships, the model identifies that Holiday Weeks and Store Size are the primary predictors of sales volume. The integration of "Markdown" data provided a competitive edge, allowing the model to differentiate between organic growth and promotion-driven spikes. The final solution provides Walmart with an automated, data-driven tool to optimize labor allocation and inventory management, potentially saving millions in logistical overhead.
+
 ### Goal
+
+The objective is to predict Weekly Sales for 99 departments across 45 stores. The primary KPIs include:
+
+1). WMAE (Weighted Mean Absolute Error): Accuracy is prioritized during holiday weeks (Super Bowl, Labor Day, Thanksgiving, and Christmas), where weights are 5x higher.
+
+2). Seasonality Modeling: Effectively capturing the "Black Friday" and "Pre-Christmas" surges.
+
+3). Feature Integration: Quantifying the impact of external factors like Fuel Prices and Temperature on consumer foot traffic.
 
 ### Data structure and initial checks
 [Dataset](https://www.kaggle.com/c/walmart-recruiting-store-sales-forecasting)
-
- - The initial checks of your transactions.csv dataset reveal the following:
-
-| Features | Description | Data types |
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-
-| Features | Description | Data types |
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
-| -------- | -------- | -------- | 
 
 ### Tools
 - Excel : Google Sheets - Check for data types, Table formatting
@@ -83,12 +84,7 @@ COLORS = ["#2E86AB", "#A23B72", "#F18F01", "#C73E1D", "#3B1F2B"]
 SEED = 42
 np.random.seed(SEED)
 ```
-Laoding the datset of `features.csv` and `stores.csv`
-``` python
-features = pd.read_csv("features.csv")
-stores = pd.read_csv("stores.csv")
-```
-Merging both the dataframes
+Laoding the datset of `features.csv`,`stores.csv`,`train.csv` and merging both the dataframes
 ``` python
 def load_and_merge_data(train_path="train.csv", stores_path="stores.csv", features_path="features.csv"):
     """
@@ -283,6 +279,14 @@ plt.title('Correlation Matrix of Walmart Sales Features')
 plt.show()
 ```
 <img width="890" height="673" alt="image" src="https://github.com/user-attachments/assets/ac17faad-b855-4b93-9ff4-a20f37d16003" />
+
+Insights:
+
+- Store Size (0.21): This is the strongest positive correlation. Larger stores tend to have higher weekly sales, which makes intuitive sense (more inventory, more foot traffic).
+
+- Department (0.14): There is a slight positive correlation here, suggesting that certain departments inherently generate higher revenue than others.
+
+- External Economic Factors: Features like temperature, fuel_price, cpi (Consumer Price Index), and unemployment have near-zero correlation with weekly sales. This suggests that, in this specific dataset, sales are relatively resilient to minor fluctuations in the macroeconomy or weather.
 
 Now, lets deep dive into our dataset to check which store and department had the maximum and minimum weekly sales.
 
@@ -820,13 +824,329 @@ downloaded the data for SQL querying
 ``` python
 ouput = df.to_csv('cleaned_data.csv', index=False)
 ```
+1). Year-Over-Year Sales Growth by Store and Quarter
 
+``` sql
+WITH quarterly AS (
+    SELECT
+        store,
+        -- Ensure date is treated as a DATE type
+        EXTRACT(YEAR FROM CAST(date AS DATE)) AS year,
+        EXTRACT(QUARTER FROM CAST(date AS DATE)) AS q,
+        SUM(weekly_sales) AS quarterly_sales
+    FROM `demand.forecast` 
+    GROUP BY 1, 2, 3
+),
 
+yoy AS (
+    SELECT
+        *,
+        LAG(quarterly_sales) OVER (
+            PARTITION BY store, q 
+            ORDER BY year
+        ) AS prior_year_sales
+    FROM quarterly
+)
+
+SELECT
+    store,
+    year,
+    q AS quarter_num,
+    ROUND(quarterly_sales, 2) AS curr_sales,
+    ROUND(prior_year_sales, 2) AS prev_year_sales,
+    ROUND(
+        ((quarterly_sales - prior_year_sales) / NULLIF(prior_year_sales, 0)) * 100, 
+        2
+    ) AS yoy_growth_pct,
+    CASE
+        WHEN quarterly_sales > prior_year_sales * 1.10 THEN 'Strong Growth (>10%)'
+        WHEN quarterly_sales > prior_year_sales THEN 'Moderate Growth'
+        WHEN quarterly_sales < prior_year_sales * 0.90 THEN 'Decline (>10%)'
+        ELSE 'Flat/Slight Decline'
+    END AS growth_category
+FROM yoy
+WHERE prior_year_sales IS NOT NULL
+ORDER BY store, year, quarter_num;
+```
+<img width="1124" height="475" alt="image" src="https://github.com/user-attachments/assets/3b4aef44-c0a2-42f4-a995-c69156a3e104" />
+
+2). Rolling 4-Week and 13-Week Moving Averages
+``` sql
+SELECT
+    store,
+    dept,
+    date,
+    weekly_sales,
+    ROUND(AVG(weekly_sales) OVER (
+        PARTITION BY store, dept
+        ORDER BY date
+        ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
+    ), 2)   AS rolling_4w_avg,
+    ROUND(AVG(weekly_sales) OVER (
+        PARTITION BY store, dept
+        ORDER BY date
+        ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
+    ), 2)   AS rolling_13w_avg,
+    ROUND(STDDEV(weekly_sales) OVER (
+        PARTITION BY store, dept
+        ORDER BY date
+        ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
+    ), 2)   AS rolling_13w_std,
+    -- Flag weeks where actual deviates >2σ from rolling mean (anomaly signal)
+    CASE
+        WHEN ABS(weekly_sales - AVG(weekly_sales) OVER (
+                    PARTITION BY store, dept
+                    ORDER BY date
+                    ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
+                 )) > 2 * STDDEV(weekly_sales) OVER (
+                    PARTITION BY store, dept
+                    ORDER BY date
+                    ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
+                 )
+        THEN 'ANOMALY'
+        ELSE 'Normal'
+    END  AS anomaly_flag
+FROM `demand.forecast`
+ORDER BY store, dept, date;
+```
+<img width="1296" height="496" alt="image" src="https://github.com/user-attachments/assets/ccecd15b-b9b7-48b3-b4b0-bdfb1a972abf" />
+
+3). Lag Features for ML Model Training
+``` sql
+SELECT
+    store,
+    dept,
+    date,
+    weekly_sales,
+    isholiday,
+    -- Lag features
+    LAG(weekly_sales, 1)  OVER w   AS sales_lag_1w,
+    LAG(weekly_sales, 2)  OVER w   AS sales_lag_2w,
+    LAG(weekly_sales, 4)  OVER w   AS sales_lag_4w,
+    LAG(weekly_sales, 8)  OVER w   AS sales_lag_8w,
+    LAG(weekly_sales, 13) OVER w   AS sales_lag_13w,
+    LAG(weekly_sales, 52) OVER w   AS sales_lag_52w,
+    -- Rolling stats (4-week)
+    AVG(weekly_sales) OVER (PARTITION BY store, dept ORDER BY date ROWS BETWEEN 4 PRECEDING AND 1 PRECEDING)  AS roll_mean_4w,
+    STDDEV(weekly_sales) OVER (PARTITION BY store, dept ORDER BY date ROWS BETWEEN 4 PRECEDING AND 1 PRECEDING) AS roll_std_4w,
+    -- Rolling stats (13-week)
+    AVG(weekly_sales) OVER (PARTITION BY store, dept ORDER BY date ROWS BETWEEN 13 PRECEDING AND 1 PRECEDING) AS roll_mean_13w,
+    -- Year-over-year ratio (strong signal for seasonal products)
+    weekly_sales / NULLIF(LAG(weekly_sales, 52) OVER w, 0)  AS yoy_ratio,
+    -- Calendar features
+    EXTRACT(week  FROM date)    AS week_of_year,
+    EXTRACT(month FROM date)    AS month,
+    EXTRACT(quarter FROM date)  AS quarter,
+    CASE WHEN EXTRACT(month FROM date) = 12 THEN 1 ELSE 0 END  AS is_december
+FROM `demand.forecast`
+WINDOW w AS (PARTITION BY store, dept ORDER BY date)
+ORDER BY store, dept, date;
+```
+<img width="1267" height="468" alt="image" src="https://github.com/user-attachments/assets/01e5e883-e029-423c-b145-bfd60f05b9f6" /><img width="1390" height="416" alt="image" src="https://github.com/user-attachments/assets/fb7e4c84-da1e-4e29-8cce-a56eb9b9dcee" /><img width="305" height="371" alt="image" src="https://github.com/user-attachments/assets/ea276146-b8f7-41ce-bbfe-bee6648a9be6" />
+
+4).Holiday Markdown Impact Analysis
+``` sql
+WITH markdown_impact AS (
+    SELECT
+        s.store,
+        s.dept,
+        s.date,
+        s.weekly_sales,
+        s.isholiday,
+        COALESCE(f.markdown1, 0) + COALESCE(f.markdown2, 0) +
+        COALESCE(f.markdown3, 0) + COALESCE(f.markdown4, 0) +
+        COALESCE(f.markdown5, 0)  AS total_markdown,
+        CASE
+            WHEN COALESCE(f.markdown1, 0) + COALESCE(f.markdown2, 0) +
+                 COALESCE(f.markdown3, 0) + COALESCE(f.markdown4, 0) +
+                 COALESCE(f.markdown5, 0) > 0
+            THEN 'Has Markdown'
+            ELSE 'No Markdown'
+        END  AS markdown_flag
+    FROM `demand.forecast` s
+    LEFT JOIN `demand.forecast` f ON s.store = f.store AND s.date = f.date
+)
+SELECT
+    isholiday,
+    markdown_flag,
+    COUNT(*)                     AS n_weeks,
+    ROUND(AVG(weekly_sales), 2)  AS avg_sales,
+    ROUND(AVG(total_markdown), 2) AS avg_markdown_amount,
+    ROUND(CORR(total_markdown, weekly_sales), 4)  AS markdown_sales_correlation
+FROM markdown_impact
+GROUP BY isholiday, markdown_flag
+ORDER BY isholiday DESC, markdown_flag;
+```
+<img width="1060" height="194" alt="image" src="https://github.com/user-attachments/assets/6ddac2b7-377f-4973-9336-cc78e95fa0aa" />
+
+5).Department-Level Sales Concentration (Pareto Analysis)
+``` sql
+WITH dept_totals AS (
+    SELECT
+        store,
+        dept,
+        SUM(weekly_sales)  AS total_sales
+    FROM `demand.forecast`
+    GROUP BY store, dept
+),
+store_totals AS (
+    SELECT store, SUM(total_sales) AS store_total FROM dept_totals GROUP BY store
+),
+ranked AS (
+    SELECT
+        d.*,
+        s.store_total,
+        ROUND(d.total_sales / s.store_total * 100, 2)  AS pct_of_store,
+        SUM(d.total_sales) OVER (
+            PARTITION BY d.store
+            ORDER BY d.total_sales DESC
+            ROWS UNBOUNDED PRECEDING
+        ) / s.store_total * 100  AS cumulative_pct,
+        RANK() OVER (PARTITION BY d.store ORDER BY d.total_sales DESC)  AS sales_rank
+    FROM dept_totals d
+    JOIN store_totals s USING (store)
+)
+SELECT
+    store,
+    dept,
+    ROUND(total_sales, 0)      AS total_sales,
+    pct_of_store,
+    ROUND(cumulative_pct, 2)   AS cumulative_pct,
+    sales_rank,
+    CASE WHEN cumulative_pct <= 80 THEN 'Top 80% (priority)' ELSE 'Tail' END  AS priority_tier
+FROM ranked
+ORDER BY store, sales_rank;
+```
+<img width="1142" height="474" alt="image" src="https://github.com/user-attachments/assets/db58579e-e2aa-4069-956a-0d0e2a802bfe" />
+
+6).Store Type Performance Comparison 
+``` sql
+WITH store_weekly AS (
+    SELECT
+        s.store,
+        st.type,
+        st.size,
+        s.date,
+        SUM(s.weekly_sales)  AS store_weekly_sales
+    FROM `demand.forecast` s
+    JOIN `demand.forecast` st ON s.store = st.store
+    GROUP BY s.store, st.type, st.size, s.date
+),
+type_stats AS (
+    SELECT
+        type,
+        COUNT(DISTINCT store)                  AS n_stores,
+        ROUND(AVG(size),          0)           AS avg_size_sqft,
+        ROUND(AVG(store_weekly_sales), 2)      AS avg_weekly_sales,
+        ROUND(STDDEV(store_weekly_sales), 2)   AS stddev_weekly_sales,
+        ROUND(STDDEV(store_weekly_sales) /
+              AVG(store_weekly_sales), 4)      AS coefficient_of_variation,
+        ROUND(MIN(store_weekly_sales), 0)      AS min_weekly,
+        ROUND(MAX(store_weekly_sales), 0)      AS max_weekly
+    FROM store_weekly
+    GROUP BY type
+)
+SELECT
+    *,
+    -- Higher CV = more volatile = needs more sophisticated model
+    CASE
+        WHEN coefficient_of_variation > 0.3 THEN 'High volatility — use ML/DL'
+        WHEN coefficient_of_variation > 0.15 THEN 'Medium — SARIMA or XGBoost'
+        ELSE 'Low — Seasonal Naive or SARIMA sufficient'
+    END  AS recommended_model
+FROM type_stats
+ORDER BY avg_weekly_sales DESC;
+```
+<img width="1410" height="228" alt="image" src="https://github.com/user-attachments/assets/fb64720b-5d8f-4893-bf8c-5ab0d731cba4" /><img width="243" height="131" alt="image" src="https://github.com/user-attachments/assets/14850385-8e42-41a0-8a82-d58d032030ba" />
+
+7).Fuel Price & Unemployment Correlation with Sales
+``` sql
+WITH external_features AS (
+    SELECT
+        s.store,
+        s.date,
+        SUM(s.weekly_sales)   AS weekly_sales,
+        AVG(f.fuel_price)     AS fuel_price,
+        AVG(f.unemployment)   AS unemployment,
+        AVG(f.temperature)    AS temperature,
+        AVG(f.cpi)            AS cpi
+    FROM `demand.forecast` s
+    LEFT JOIN `demand.forecast`f ON s.store = f.store AND s.date = f.date
+    GROUP BY s.store, s.date
+)
+SELECT
+    'Fuel Price' AS feature,
+    ROUND(CORR(fuel_price,   weekly_sales), 4)  AS correlation_with_sales
+FROM external_features
+UNION ALL
+SELECT 'Unemployment', ROUND(CORR(unemployment, weekly_sales), 4) FROM external_features
+UNION ALL
+SELECT 'Temperature',  ROUND(CORR(temperature,  weekly_sales), 4) FROM external_features
+UNION ALL
+SELECT 'CPI',          ROUND(CORR(cpi,          weekly_sales), 4) FROM external_features
+ORDER BY ABS(correlation_with_sales) DESC;
+```
+<img width="486" height="268" alt="image" src="https://github.com/user-attachments/assets/b1bc6511-993b-4b10-b2a5-877cce2c25b3" />
+
+8). Seasonal Index Calculation
+``` sql
+WITH weekly_avg AS (
+    SELECT
+        store,
+        dept,
+        EXTRACT(week FROM date)   AS week_of_year,
+        AVG(weekly_sales)         AS avg_this_week
+    FROM `demand.forecast`
+    GROUP BY store, dept, EXTRACT(week FROM date)
+),
+overall_avg AS (
+    SELECT
+        store,
+        dept,
+        AVG(weekly_sales) AS overall_avg
+    FROM `demand.forecast`
+    GROUP BY store, dept
+),
+seasonal_idx AS (
+    SELECT
+        w.store,
+        w.dept,
+        w.week_of_year,
+        ROUND(w.avg_this_week / NULLIF(o.overall_avg, 0), 4)  AS seasonal_index
+    FROM weekly_avg w
+    JOIN overall_avg o USING (store, dept)
+)
+SELECT
+    week_of_year,
+    ROUND(AVG(seasonal_index), 4)    AS avg_seasonal_index,
+    ROUND(MAX(seasonal_index), 4)    AS max_seasonal_index,
+    ROUND(MIN(seasonal_index), 4)    AS min_seasonal_index
+FROM seasonal_idx
+GROUP BY week_of_year
+ORDER BY week_of_year;
+```
+<img width="730" height="476" alt="image" src="https://github.com/user-attachments/assets/e459e201-3d66-4892-ac6d-eb38f8abcb71" />
+
+**Tableau**
+
+<img width="1267" height="891" alt="image" src="https://github.com/user-attachments/assets/34fc551f-d41e-4ddc-ae07-c69f5e5e1502" />
 
 ### Insights
 
+- The "Holiday Halo" Effect: Sales during the four major holiday weeks account for a disproportionate amount of annual revenue, requiring specialized model weighting.
+
+- Markdown Correlation: While Markdowns 1 and 5 showed the strongest correlation with sales spikes, Markdowns 2 and 3 were often specific to certain departments, suggesting a need for department-level promotional strategies.
+
+- Regional Resilience: Economic indicators like CPI and Unemployment showed a surprisingly low correlation with short-term sales fluctuations, suggesting Walmart’s "Everyday Low Price" model is resilient to minor economic shifts.
+
+- Cluster Performance: Type 'A' stores significantly outperformed Types 'B' and 'C' in both volume and stability, indicating that store infrastructure is a major baseline sales driver.
+
 ### Recommendations
 
+- Strategic Inventory Stocking: Walmart should prioritize inventory surges 1-2 weeks prior to the "Thanksgiving" and "Christmas" windows, as the data shows these as the highest volume periods.
 
+- Model Selection: For stable departments, SARIMAX is recommended for its ability to handle seasonality; however, for stores with frequent markdowns, Gradient Boosting or Random Forest should be used to capture non-linear interactions between promotions and sales.
 
+- Data Enrichment: Future iterations should include local event data (e.g., sporting events or localized weather emergencies) to further refine store-specific predictions.
 
+- Weighting Holidays: Ensure that the forecasting model continues to prioritize accuracy during holiday weeks, as these periods represent a disproportionate share of annual revenue and are the most prone to stock-outs.

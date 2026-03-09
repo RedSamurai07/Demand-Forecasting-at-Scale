@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env/
+
+# MLflow
+mlflow.db
+mlruns/
+
+# Data
+*.csv
+*.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/

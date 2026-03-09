@@ -1,5 +1,7 @@
 # Demand Forecasting at Scale
 
+[![CI Pipeline Status](https://github.com/RedSamurai07/Demand-Forecasting-at-Scale/actions/workflows/ci.yml/badge.svg)](https://github.com/RedSamurai07/Demand-Forecasting-at-Scale/actions)
+
 ## Table of contents
 - [Project Overview](#project-overview)
 - [Executive Summary](#executive-summary)

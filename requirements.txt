@@ -1,13 +1,6 @@
 pandas
 numpy
-matplotlib
-seaborn
-scipy
-statsmodels
 scikit-learn
 xgboost
-mlflow
-pytest
-fastapi
-uvicorn
-python-multipart
+streamlit
+joblib

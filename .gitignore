@@ -11,7 +11,11 @@ env/
 mlflow.db
 mlruns/
 
-# Data
+# Streamlit deployment — keep these tracked
+!model.joblib
+!clean_demand_data.csv
+
+# Data (large raw files)
 *.csv
 *.ipynb_checkpoints
 

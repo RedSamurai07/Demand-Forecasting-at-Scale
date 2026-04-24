@@ -2,7 +2,7 @@
 
 [![CI Pipeline Status](https://github.com/RedSamurai07/Demand-Forecasting-at-Scale/actions/workflows/ci.yml/badge.svg)](https://github.com/RedSamurai07/Demand-Forecasting-at-Scale/actions)
 
-[Live Link]()
+[Live Link](https://demand-forecasting-at-scale-live-app.streamlit.app/)
 
 ## Table of contents
 - [Project Overview](#project-overview)

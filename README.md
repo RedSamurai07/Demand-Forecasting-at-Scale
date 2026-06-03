@@ -53,7 +53,7 @@ The objective is to predict Weekly Sales for 99 departments across 45 stores. Th
 
 ### Data structure and initial checks
 
-Data Source: Primary dataset collected via custom web-scraping scripts [or API integration].
+Data Infrastructure: Pipeline automatically ingests real-time data from public endpoints via cron jobs.
 
 ### Tools
 - Excel : Google Sheets - Check for data types, Table formatting

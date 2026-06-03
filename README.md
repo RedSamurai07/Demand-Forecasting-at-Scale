@@ -25,7 +25,7 @@ This project addresses the complex challenge of Retail Demand Forecasting for Wa
 
 
 ### Production Architecture
-To demonstrate production readiness, this A/B testing framework is fully productized and automated:
+To demonstrate production readiness, this Retail Demand Forecasting framework is fully productized and automated:
 
 * **Containerization:** Packaged with Docker for seamless replication across local and cloud environments.
 * **Cloud Deployment:** Hosted on an AWS EC2 instance running a FastAPI backend microservice.

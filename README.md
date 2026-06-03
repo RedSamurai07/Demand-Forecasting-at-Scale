@@ -1139,12 +1139,9 @@ ORDER BY week_of_year;
 ```
 <img width="730" height="476" alt="image" src="https://github.com/user-attachments/assets/e459e201-3d66-4892-ac6d-eb38f8abcb71" />
 
-**Tableau**
+**Tableau Dashboard**
 
 <img width="1267" height="891" alt="image" src="https://github.com/user-attachments/assets/34fc551f-d41e-4ddc-ae07-c69f5e5e1502" />
-
-Result:
-
 
 
 ### Insights

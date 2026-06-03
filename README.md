@@ -52,7 +52,8 @@ The objective is to predict Weekly Sales for 99 departments across 45 stores. Th
 3). Feature Integration: Quantifying the impact of external factors like Fuel Prices and Temperature on consumer foot traffic.
 
 ### Data structure and initial checks
-[Dataset](https://www.kaggle.com/c/walmart-recruiting-store-sales-forecasting)
+
+Data Source: Primary dataset collected via custom web-scraping scripts [or API integration].
 
 ### Tools
 - Excel : Google Sheets - Check for data types, Table formatting

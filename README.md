@@ -6,6 +6,7 @@
 
 ## Table of contents
 - [Project Overview](#project-overview)
+- [Production Architecture](#production-architecture)
 - [Executive Summary](#executive-summary)
 - [Goal](goal)
 - [Data Structure](data-structure)

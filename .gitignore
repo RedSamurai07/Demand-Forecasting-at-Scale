@@ -19,6 +19,9 @@ mlruns/
 *.csv
 *.ipynb_checkpoints
 
+# Security — never commit private keys
+*.pem
+
 # IDEs
 .vscode/
 .idea/

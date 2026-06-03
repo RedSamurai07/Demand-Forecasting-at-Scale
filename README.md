@@ -23,6 +23,18 @@ This project addresses the complex challenge of Retail Demand Forecasting for Wa
 
 - Key Challenge: Accurate forecasting during high-volatility holiday weeks (Super Bowl, Labor Day, Thanksgiving, and Christmas).
 
+
+### Production Architecture
+To demonstrate production readiness, this A/B testing framework is fully productized and automated:
+
+* **Containerization:** Packaged with Docker for seamless replication across local and cloud environments.
+* **Cloud Deployment:** Hosted on an AWS EC2 instance running a FastAPI backend microservice.
+* **Experiment Tracking:** Integrated with an MLflow artifact registry to log statistical parameters and live test variations.
+* **CI/CD Pipeline:** Automated via GitHub Actions to execute statistical unit tests on every code push.
+
+👉 **For the complete step-by-step technical setup, Dockerfiles, and cloud infrastructure configurations, read the full [Production Deployment Guide](DEPLOYMENT.md).**
+
+
 ### Executive Summary
 
 In the highly competitive retail landscape, overstocking leads to capital inefficiency, while understocking results in lost revenue. This project developed a high-precision forecasting framework that successfully captures the extreme volatility of holiday-driven demand.

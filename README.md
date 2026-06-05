@@ -24,6 +24,33 @@ This project addresses the complex challenge of Retail Demand Forecasting for Wa
 
 - Key Challenge: Accurate forecasting during high-volatility holiday weeks (Super Bowl, Labor Day, Thanksgiving, and Christmas).
 
+### Project Architecture
+
+```mermaid
+graph LR
+    subgraph Development [1. Data & Modeling]
+        A[stores.csv,train.csv,features.csv Data] --> B[Hypothesis Testing & Statsmodels]
+        B --> C[Machine Learning / Deep Learning Models]
+    end
+
+    subgraph Tracking [2. Experimentation]
+        C --> D((MLflow Tracking))
+    end
+
+    subgraph DevOps [3. CI/CD & Containers]
+        D --> E[GitHub Actions CI/CD]
+        E --> F[Docker Containerization]
+    end
+
+    subgraph Deployment [4. Production]
+        F --> G[AWS Cloud Deployment]
+    end
+
+    style D fill:#012A4A,stroke:#333,stroke-width:2px,color:#fff
+    style E fill:#2671E5,stroke:#333,stroke-width:2px,color:#fff
+    style F fill:#0db7ed,stroke:#333,stroke-width:2px,color:#fff
+    style G fill:#FF9900,stroke:#333,stroke-width:2px,color:#fff
+```
 
 ### Production Architecture
 To demonstrate production readiness, this Retail Demand Forecasting framework is fully productized and automated:

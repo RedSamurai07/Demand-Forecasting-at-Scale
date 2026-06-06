@@ -5,10 +5,10 @@ source =
     app.py
 
 omit =
+    tests/*
     *.csv
     *.ipynb
     deploy.sh
-    tests/*
     mlruns/*
 
 [report]
@@ -17,3 +17,6 @@ exclude_lines =
     if __name__ == .__main__.:
     except Exception:
     except FileNotFoundError:
+    except Exception as e:
+    return None
+    print

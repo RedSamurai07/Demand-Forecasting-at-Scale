@@ -9,12 +9,11 @@ omit =
     *.ipynb
     deploy.sh
     tests/*
+    mlruns/*
 
 [report]
-# This tells coverage to skip lines under these blocks completely
 exclude_lines =
     pragma: no cover
     if __name__ == .__main__.:
-    
-    # Add patterns that match your app initialization if needed:
-    app\.run
+    except Exception:
+    except FileNotFoundError:

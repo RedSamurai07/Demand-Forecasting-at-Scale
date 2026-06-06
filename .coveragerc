@@ -1,0 +1,19 @@
+[run]
+# Measure coverage across both src/ and your root training scripts
+source = 
+    src
+    train.py
+    app.py
+
+omit =
+    # Ignore data files, notebooks, and deployment scripts
+    *.csv
+    *.ipynb
+    deploy.sh
+    tests/*
+
+[report]
+# Don't penalize code that only runs when executing a script manually
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:

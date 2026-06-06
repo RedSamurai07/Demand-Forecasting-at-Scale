@@ -21,11 +21,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest pytest-cov  # Added pytest-cov for coverage tracking
         
     - name: Run tests
       run: |
         export PYTHONPATH=$PYTHONPATH:.
-        pytest tests/ --junitxml=reports/junit/test-results.xml
+        # Added --cov=. to scan your file structure and --cov-report=xml for Codecov consumption
+        pytest tests/ --cov=. --cov-report=xml --junitxml=reports/junit/test-results.xml
         
     - name: Upload Test Results
       if: always()
@@ -33,3 +35,10 @@ jobs:
       with:
         name: test-results
         path: reports/junit/test-results.xml
+
+    - name: Upload Coverage Reports to Codecov
+      if: always()  # Ensures coverage uploads even if some tests fail, giving you visibility
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false  

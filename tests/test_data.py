@@ -5,24 +5,30 @@ import os
 import sys
 from unittest.mock import MagicMock
 
-# 1. COMPREHENSIVE STREAMLIT INTERACTIVE MOCKING
+# 1. ADVANCED STREAMLIT SIMULATION MOCKS
 mock_st = MagicMock()
-# Simulate a user clicking buttons and selecting components to cover app.py inner blocks
+# Forces Streamlit buttons and state parameters to return true, executing inner form logic
 mock_st.button.return_value = True
 mock_st.sidebar = MagicMock()
 mock_st.selectbox.return_value = 1
 mock_st.number_input.return_value = 10.0
 
+# Prevent rendering elements from crashing inside headless CI runners
+mock_st.dataframe = MagicMock()
+mock_st.success = MagicMock()
+mock_st.error = MagicMock()
+mock_st.write = MagicMock()
+mock_st.title = MagicMock()
+
 sys.modules['streamlit'] = mock_st
 
-# 2. MACHINE LEARNING LOGGING MOCKS
+# 2. MACHINE LEARNING MODULE MOCKS
 mock_mlflow = MagicMock()
 mock_mlflow.start_run.return_value.__enter__ = MagicMock()
 mock_mlflow.start_run.return_value.__exit__ = MagicMock()
 sys.modules['mlflow'] = mock_mlflow
 sys.modules['mlflow.sklearn'] = MagicMock()
 
-# Mock XGBoost model structure to fake actual evaluations
 mock_regressor_instance = MagicMock()
 mock_regressor_instance.predict.return_value = np.array([150.0, 250.0])
 
@@ -82,10 +88,9 @@ def test_wmae_loss_calculation():
     assert score >= 0
 
 # -------------------------------------------------------------------------
-# TARGETED LINE EXECUTION FOR TRAIN.PY & APP.PY
+# EXTENDED INTERACTIVE FLOW EXECUTION FOR TARGET LOGIC
 # -------------------------------------------------------------------------
 def test_train_model_execution(monkeypatch):
-    """Executes train_model code path completely by feeding clean arrays to metrics."""
     mock_data = pd.DataFrame({
         "store": [1, 1, 1, 1, 1], "dept": [10, 10, 10, 10, 10],
         "weekly_sales": [100.0, 200.0, 150.0, 300.0, 250.0],
@@ -108,7 +113,7 @@ def test_train_model_execution(monkeypatch):
 
 
 def test_app_initialization_flow(monkeypatch):
-    """Fakes backend initialization data frames to run interactive blocks."""
+    """Simulates active user input actions to sweep unexecuted user branches."""
     mock_app_data = pd.DataFrame({
         "store": [1, 2], "dept": [10, 20], "weekly_sales": [100, 200],
         "date": ["2011-01-07", "2011-01-14"], "type": ["A", "B"], "size": [100, 200],
@@ -116,14 +121,14 @@ def test_app_initialization_flow(monkeypatch):
         "unemployment": [7.0, 7.1], "isholiday": [False, True]
     })
 
+    # Intercept data reading & prediction utilities
     monkeypatch.setattr("pandas.read_csv", MagicMock(return_value=mock_app_data))
     monkeypatch.setattr("joblib.load", MagicMock(return_value=mock_regressor_instance))
     monkeypatch.setattr("src.features.engineer_features", MagicMock(return_value=mock_app_data))
 
-    try:
-        if 'app' in sys.modules:
-            del sys.modules['app']
-        import app
-        assert app is not None
-    except Exception:
-        pass
+    # Force clean context evaluation
+    if 'app' in sys.modules:
+        del sys.modules['app']
+    
+    import app
+    assert app is not None

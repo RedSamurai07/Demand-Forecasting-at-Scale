@@ -8,7 +8,7 @@
 |---|---|
 | **Framework Name** | Retail Demand Forecasting at Scale — Multi-Model Time Series Framework |
 | **Python Version** | 3.10 |
-| **Analysis Date** | June 2026 |
+| **Analysis Date** | March 2026 |
 | **Recommended Model** | XGBoost Regressor (production deployment via `train.py`) |
 | **Primary Metric** | WMAE — Weighted Mean Absolute Error (holiday weeks weighted 5×) |
 | **Secondary Metrics** | MAE, RMSE, MAPE%, SMAPE% |
@@ -206,7 +206,40 @@ Using conformal prediction intervals to drive safety stock decisions:
 
 ---
 
-## 11. Final Decision Summary
+## 11. Ethical Considerations & Limitations
+
+- **Temporal Drift:** The dataset covers 2010–2012. Retail patterns have shifted significantly — retraining on recent data is essential before production use.
+- **Holiday Generalisation:** The 5× holiday weighting assumes all holiday weeks are equally important. Thanksgiving and Christmas typically outperform Super Bowl and Labor Day — per-holiday weights would improve accuracy.
+- **Negative Sales:** Some department-weeks show negative `weekly_sales` (returns exceeding purchases). These are valid but can destabilise lag features — a clipping floor of 0 should be evaluated.
+- **Store Closure:** The dataset doesn't explicitly flag store closures, which can produce anomalous zeros that corrupt rolling statistics.
+- **External Shocks:** Events like COVID-19 or supply chain disruptions are not represented — the model should be retrained or augmented with exogenous indicators in such scenarios.
+
+---
+
+## 12. Infrastructure & Tools
+
+| Category | Tool |
+|---|---|
+| Language | Python 3.10 |
+| ML / Forecasting | XGBoost, SARIMA (statsmodels), LSTM (PyTorch) |
+| Baselines | Naive, Seasonal Naive (52-week) |
+| Statistical Tests | ADF (Augmented Dickey-Fuller), ACF/PACF |
+| Uncertainty | Conformal Prediction Intervals |
+| API Framework | FastAPI + Uvicorn |
+| Frontend | Streamlit |
+| Experiment Tracking | MLflow (SQLite backend) |
+| Testing | Pytest + pytest-cov |
+| Coverage Reporting | Codecov |
+| CI/CD | GitHub Actions |
+| Containerisation | Docker |
+| Cloud Infrastructure | AWS EC2 |
+| Model Serialisation | Joblib (`model.joblib`) |
+| Data Processing | Pandas, NumPy |
+| Visualisation | Matplotlib, Seaborn, Tableau |
+
+---
+
+## 13. Final Decision Summary
 
 ```
 ══════════════════════════════════════════════════════════════
@@ -234,36 +267,3 @@ PRODUCTION RECOMMENDATIONS:
 • Log all predictions to MLflow for audit trail
 ══════════════════════════════════════════════════════════════
 ```
-
----
-
-## 12. Ethical Considerations & Limitations
-
-- **Temporal Drift:** The dataset covers 2010–2012. Retail patterns have shifted significantly — retraining on recent data is essential before production use.
-- **Holiday Generalisation:** The 5× holiday weighting assumes all holiday weeks are equally important. Thanksgiving and Christmas typically outperform Super Bowl and Labor Day — per-holiday weights would improve accuracy.
-- **Negative Sales:** Some department-weeks show negative `weekly_sales` (returns exceeding purchases). These are valid but can destabilise lag features — a clipping floor of 0 should be evaluated.
-- **Store Closure:** The dataset doesn't explicitly flag store closures, which can produce anomalous zeros that corrupt rolling statistics.
-- **External Shocks:** Events like COVID-19 or supply chain disruptions are not represented — the model should be retrained or augmented with exogenous indicators in such scenarios.
-
----
-
-## 13. Infrastructure & Tools
-
-| Category | Tool |
-|---|---|
-| Language | Python 3.10 |
-| ML / Forecasting | XGBoost, SARIMA (statsmodels), LSTM (PyTorch) |
-| Baselines | Naive, Seasonal Naive (52-week) |
-| Statistical Tests | ADF (Augmented Dickey-Fuller), ACF/PACF |
-| Uncertainty | Conformal Prediction Intervals |
-| API Framework | FastAPI + Uvicorn |
-| Frontend | Streamlit |
-| Experiment Tracking | MLflow (SQLite backend) |
-| Testing | Pytest + pytest-cov |
-| Coverage Reporting | Codecov |
-| CI/CD | GitHub Actions |
-| Containerisation | Docker |
-| Cloud Infrastructure | AWS EC2 |
-| Model Serialisation | Joblib (`model.joblib`) |
-| Data Processing | Pandas, NumPy |
-| Visualisation | Matplotlib, Seaborn |

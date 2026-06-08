@@ -109,32 +109,32 @@ train.csv ──LEFT JOIN── stores.csv ──LEFT JOIN── features.csv
 │  train.csv + stores.csv + features.csv                              │
 │         │                                                           │
 │         ▼  load_and_merge_data()                                    │
-│  Unified DataFrame (421k+ rows, hierarchically sorted)             │
+│  Unified DataFrame (421k+ rows, hierarchically sorted)              │
 └──────────────────────────┬──────────────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────────────┐
 │                     2. FEATURE ENGINEERING                          │
 │  engineer_features()                                                │
 │  ├── Calendar features (week, month, quarter, year)                 │
-│  ├── Lag features (1w–52w per store-dept)                          │
-│  ├── Rolling stats (4w/8w/13w mean & std, shift-safe)              │
+│  ├── Lag features (1w–52w per store-dept)                           │
+│  ├── Rolling stats (4w/8w/13w mean & std, shift-safe)               │
 │  ├── Markdown aggregation + holiday interaction term                │
-│  └── Store type encoding + time index                              │
+│  └── Store type encoding + time index                               │
 └──────────────────────────┬──────────────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────────────┐
 │                  3. EDA & STATISTICAL VALIDATION                    │
 │  ├── ADF stationarity tests (per series)                            │
-│  ├── ACF / PACF analysis → SARIMAX order selection                 │
+│  ├── ACF / PACF analysis → SARIMAX order selection                  │
 │  ├── Seasonal decomposition (trend / seasonal / residual)           │
 │  └── Correlation analysis (heatmap, scatter, group means)           │
 └──────────────────────────┬──────────────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────────────┐
 │                     4. MODEL TRAINING                               │
-│  Temporal split: train < 2012  |  test = 2012                      │
+│  Temporal split: train < 2012  |  test = 2012                       │
 │  ├── Baseline: SARIMAX (per series, interpretability)               │
-│  └── Primary:  XGBRegressor (n_estimators=500, lr=0.05, depth=6)   │
+│  └── Primary:  XGBRegressor (n_estimators=500, lr=0.05, depth=6)    │
 │                                                                     │
 │  Loss: WMAE (holiday weeks weighted 5×)                             │
 │  Secondary: MAE, RMSE                                               │
@@ -143,15 +143,15 @@ train.csv ──LEFT JOIN── stores.csv ──LEFT JOIN── features.csv
 ┌──────────────────────────▼──────────────────────────────────────────┐
 │                  5. EXPERIMENT TRACKING (MLflow)                    │
 │  sqlite:///mlflow.db · Experiment: "Demand_Forecasting_Walmart"     │
-│  Logs: params, metrics (MAE / RMSE / WMAE), model artifact         │
+│  Logs: params, metrics (MAE / RMSE / WMAE), model artifact          │
 └──────────────────────────┬──────────────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────────────┐
 │                  6. PACKAGING & CI/CD                               │
 │  ├── model.joblib → serialized artifact                             │
 │  ├── Docker → containerized environment (Dockerfile)                │
-│  ├── GitHub Actions → CI pipeline (unit tests via PyTest on push)  │
-│  └── deploy.sh → automated deployment script                       │
+│  ├── GitHub Actions → CI pipeline (unit tests via PyTest on push)   │
+│  └── scripts/deploy.sh → automated deployment script                        │
 └──────────────────────────┬──────────────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────────────┐
@@ -173,7 +173,7 @@ train.csv ──LEFT JOIN── stores.csv ──LEFT JOIN── features.csv
 | Feature | Correlation with Weekly Sales | Insight |
 |---|---|---|
 | `size` | **+0.21** | Strongest positive driver — larger stores sell more |
-| `dept` | +0.14 | Certain departments inherently generate higher revenue |
+| `dept` | +0.14 | Certain departments inherently adgenerate higher revenue |
 | `temperature` | ~0.00 | Sales resilient to weather fluctuations |
 | `fuel_price` | ~0.00 | Near-zero correlation |
 | `cpi` | ~0.00 | Near-zero correlation |

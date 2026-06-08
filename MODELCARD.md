@@ -100,6 +100,7 @@ train.csv ──LEFT JOIN── stores.csv ──LEFT JOIN── features.csv
 ---
 
 
+<<<<<<< Updated upstream
 ### 5. Methodology & Pipeline Architecture
  
 ```
@@ -164,6 +165,10 @@ train.csv ──LEFT JOIN── stores.csv ──LEFT JOIN── features.csv
 ---
 
 ## 6. Correlation Insights (from EDA)
+=======
+
+## 5. Correlation Insights (from EDA)
+>>>>>>> Stashed changes
 
 | Feature | Correlation with Weekly Sales | Insight |
 |---|---|---|

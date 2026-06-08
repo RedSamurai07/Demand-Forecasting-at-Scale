@@ -101,11 +101,11 @@ def test_train_model_execution(monkeypatch):
         "unemployment": [8.1] * 5, "temperature": [42.0] * 5, "fuel_price": [2.5] * 5
     })
 
-    monkeypatch.setattr("src.data_loader.load_and_merge_data", MagicMock(return_value=mock_data))
-    monkeypatch.setattr("src.features.engineer_features", MagicMock(return_value=mock_data))
+    monkeypatch.setattr("train.load_and_merge_data", MagicMock(return_value=mock_data))
+    monkeypatch.setattr("train.engineer_features", MagicMock(return_value=mock_data))
     monkeypatch.setattr("joblib.dump", MagicMock())
     monkeypatch.setattr("os.path.getsize", MagicMock(return_value=1024))
-
+    
     import train
     train.train_model()
     assert True

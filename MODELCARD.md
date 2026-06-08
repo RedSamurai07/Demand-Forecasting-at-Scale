@@ -100,7 +100,7 @@ train.csv ──LEFT JOIN── stores.csv ──LEFT JOIN── features.csv
 ---
 
 
-### 5. End-to-End Pipeline Architecture
+### 5. Methodology & Pipeline Architecture
  
 ```
 ┌─────────────────────────────────────────────────────────────────────┐

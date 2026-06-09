@@ -15,13 +15,13 @@ mlruns/
 !model.joblib
 !clean_demand_data.csv
 
-# Data (large raw files) — ignore CSVs but keep folder structure
-data/*.csv
-data/raw/*.csv
-data/data_processed/*.csv
-!data/.gitkeep
-!data/raw/.gitkeep
-!data/data_processed/.gitkeep
+# Data (large raw files) — ignore CSVs at root level only
+*.csv
+!data/
+!data/raw/
+!data/data_processed/
+!data/raw/*.csv
+!data/data_processed/*.csv
 *.ipynb_checkpoints
 
 # Security — never commit private keys

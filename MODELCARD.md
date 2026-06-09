@@ -151,7 +151,7 @@ train.csv ──LEFT JOIN── stores.csv ──LEFT JOIN── features.csv
 │  ├── model.joblib → serialized artifact                             │
 │  ├── Docker → containerized environment (Dockerfile)                │
 │  ├── GitHub Actions → CI pipeline (unit tests via PyTest on push)   │
-│  └── scripts/deploy.sh → automated deployment script                        │
+│  └── scripts/deploy.sh → automated deployment script                │
 └──────────────────────────┬──────────────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────────────┐

@@ -83,7 +83,9 @@ The objective is to predict Weekly Sales for 99 departments across 45 stores. Th
 
 ### Data structure and initial checks
 
-Data Infrastructure: Pipeline automatically ingests real-time data from public endpoints via cron jobs.
+Data Infrastructure: 
+
+Built on the Kaggle Walmart Recruiting: Store Sales Forecasting dataset (45 stores, historical weekly sales 2010–2012). Pipeline is designed to support automated ingestion from live endpoints in a production deployment.
 
 ### Tools
 - Excel : Google Sheets - Check for data types, Table formatting

@@ -85,7 +85,7 @@ The objective is to predict Weekly Sales for 99 departments across 45 stores. Th
 
 Data Infrastructure: 
 
-Built on the Kaggle Walmart Recruiting: Store Sales Forecasting dataset (45 stores, historical weekly sales 2010–2012). Pipeline is designed to support automated ingestion from live endpoints in a production deployment.
+[Built on the Kaggle Walmart Recruiting Store Sales Forecasting dataset](https://www.kaggle.com/c/walmart-recruiting-store-sales-forecasting) 45 stores, historical weekly sales 2010–2012. Pipeline is designed to support automated ingestion from live endpoints in a production deployment.
 
 ### Tools
 - Excel : Google Sheets - Check for data types, Table formatting
